@@ -89,9 +89,13 @@ extern "C" {
     void kernel_main() {
 	clear(BLACK);
 	uint8_t i;
-	for(i=0;i<200;i++) printf("hello world\n"),fg_color = (enum color)(i%7+1);
+	for(i=0;i<ROWS/2;i++) printf("hello world!\n"),fg_color = (enum color)(i%7+1);
 ///printf("hello world!");
 ///memmove(video + COLS, video, COLS);
+    const char *w = "Welcome to fagci's OS!";
+caret_x = (int)(COLS/2) - (int)(strlen(w)/2);
+caret_y = (int)(ROWS/2);
+printf(w);
 while (1);
     }
 }
