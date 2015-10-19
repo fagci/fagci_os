@@ -1,5 +1,6 @@
 .POSIX:
 .PHONY: clean run
+.SILENT:
 
 CC=g++
 AS=nasm

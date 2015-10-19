@@ -1,6 +1,8 @@
 global loader
 global stack_ptr
 
+extern kernel_early
+extern _init
 extern kernel_main
 
 MODULEALIGN equ 1<<0
@@ -25,6 +27,8 @@ loader:
   push eax
   push ebx
 
+  call kernel_early
+  call _init
   call kernel_main
 
   cli
