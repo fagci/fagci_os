@@ -1,3 +1,4 @@
+src/klib/*.o
 out/
 iso/
 fos.img

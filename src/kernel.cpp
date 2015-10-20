@@ -1,33 +1,10 @@
 #include "stdint.h"
+#include "klib/tty.h"
+#include "klib/vga.h"
+#include "klib/serial.h"
+#include "klib/string.h"
 
-enum color {
-	BLACK = 0, BRIGHT = 7
-};
-
-enum size {
-	COLS = 80, ROWS = 25
-};
-
-uint16_t * const video = (uint16_t*) 0xB8000;
-uint16_t caret_x = 0, caret_y = 0;
-enum color fg_color = BRIGHT, bg_color = BLACK;
-
-void* memmove(void* dstptr, const void* srcptr, uint16_t size) {
-	unsigned char* dst = (unsigned char*) dstptr;
-	const unsigned char* src = (const unsigned char*) srcptr;
-	if (dst < src)
-		for (uint16_t i = 0; i < size; i++)
-			dst[i] = src[i];
-	else
-		for (uint16_t i = size; i != 0; i--)
-			dst[i - 1] = src[i - 1];
-	return dstptr;
-}
-
-static inline void outb(uint16_t port, uint8_t val) {
-    asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
-}
-
+/*
 void update_cursor(int row, int col) {
     unsigned short position=(row*80) + col;
  
@@ -37,79 +14,31 @@ void update_cursor(int row, int col) {
     // cursor HIGH port to vga INDEX register
     outb(0x3D4, 0x0E);
     outb(0x3D5, (unsigned char )((position>>8)&0xFF));
- }
-
-void put_entry_at(uint8_t x, uint8_t y, enum color fg, enum color bg, char c) {
-	video[y * COLS + x] = (bg << 12) | (fg << 8) | c;
 }
-
-void scroll() {
-	uint8_t x;
-	memmove(video, video + COLS, COLS * (ROWS - 1));
-	for (x = 0; x < COLS; x++)
-		put_entry_at(x, caret_y, fg_color, bg_color, ' ');
-}
-
-void putc(char c) {
-	if (c == '\n') {
-		caret_x = 0;
-		caret_y++;
-		return;
-	}
-	put_entry_at(caret_x, caret_y, fg_color, bg_color, c);
-	update_cursor(caret_x, caret_y);
-	if (++caret_x == COLS) {
-		caret_x = 0;
-		if (++caret_y == ROWS) {
-			scroll();
-			caret_y--;
-		}
-	}
-}
-
-uint16_t strlen(const char* string) {
-	uint16_t result = 0;
-	while (string[result])
-		result++;
-	return result;
-}
-
-void write(const char* s, uint16_t size) {
-	for (uint16_t i = 0; i < size; i++)
-		putc(s[i]);
-}
-
-void puts(const char *s) {
-	write(s, strlen(s));
-}
-
-void clear(enum color bg) {
-	uint8_t x, y;
-	caret_x = caret_y = 0;
-	for (y = 0; y < ROWS; y++)
-		for (x = 0; x < COLS; x++)
-			put_entry_at(x, y, fg_color, bg, ' ');
-}
-
+*/
 void printf(const char *s) {
-	puts(s);
+	tty_puts(s);
 }
+
+#define PORT COM1
 
 extern "C" {
-    void kernel_early() {
+    void kernel_early(void) {
+        //init_serial(PORT);
+        //write_serial(PORT, '1');
+        //tty_init();
     }
     void _init() {
     }
-    void kernel_main() {
-        clear(BLACK);
-        uint8_t i;
-        for (i = 0; i < ROWS / 2; i++)
-            printf("hello world!\n"), fg_color = (enum color) (i % 7 + 1);
+    void kernel_main(void) {
+
+        //
+        /*size_t i;
+        for (i = 0; i < VGA_HEIGHT / 2; i++)
+            printf("hello world!\n");
 
         const char *w = "Welcome to fagci's OS!";
-        caret_x = (int) (COLS / 2) - (int) (strlen(w) / 2);
-        caret_y = (int) (ROWS / 2);
-        printf(w);
-        while (1);
+        printf(w);*/
+        //while (1);
     }
 }
