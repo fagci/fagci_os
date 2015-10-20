@@ -3,7 +3,7 @@ AS=nasm
 
 ASFLAGS=-f elf32
 CFLAGS=-m32 -O2 -Wall -Wextra -ffreestanding -fbuiltin -fno-exceptions -fno-rtti -c
-LDFLAGS=-m32 -Wall -Wextra -nostdlib -lgcc -static -shared
+LDFLAGS=-m32 -nostdlib -lgcc -shared -static
 
 C_IN=$(wildcard *.cpp)
 C_OUT=$(C_IN:.cpp=.o)
@@ -23,7 +23,7 @@ all: klib.o
 
 klib.o: $(A_OUT) $(C_OUT)
 	echo Building klib...
-	$(CC) $(LDFLAGS) -o $@ $^
+	gcc $(LDFLAGS) -o $@ $^
 
 clean:
 	rm -f *.o klib.o

@@ -1,44 +1,42 @@
-global loader
-global stack_ptr
+# Declare constants used for creating a multiboot header.
+.set ALIGN,    1<<0             # align loaded modules on page boundaries
+.set MEMINFO,  1<<1             # provide memory map
+.set FLAGS,    ALIGN | MEMINFO  # this is the Multiboot 'flag' field
+.set MAGIC,    0x1BADB002       # 'magic number' lets bootloader find the header
+.set CHECKSUM, -(MAGIC + FLAGS) # checksum of above, to prove we are multiboot
 
-extern kernel_early
-extern _init
-extern kernel_main
+# Declare a header as in the Multiboot Standard.
+.section .multiboot
+.align 4
+.long MAGIC
+.long FLAGS
+.long CHECKSUM
 
-MODULEALIGN equ 1<<0
-MEMINFO equ 1<<1
-FLAGS equ MODULEALIGN | MEMINFO
-MAGIC equ 0x1BADB002
-CHECKSUM equ -(MAGIC + FLAGS)
+# Reserve a stack for the initial thread.
+.section .bootstrap_stack, "aw", @nobits
+stack_bottom:
+.skip 16384 # 16 KiB
+stack_top:
 
-section .mbheader
-align 4
-MultiBootHeader:
-  dd MAGIC
-  dd FLAGS
-  dd CHECKSUM
+# The kernel entry point.
+.section .text
+.global _start
+.type _start, @function
+_start:
+    movl $stack_top, %esp
 
-section .text
+    # Initialize the core kernel before running the global constructors.
+    call kernel_early
 
-STACKSIZE equ 0x4000
+    # Call the global constructors.
+    call _init
 
-loader:
-  mov esp, stack+STACKSIZE
-  push eax
-  push ebx
+    # Transfer control to the main kernel.
+    call kernel_main
 
-  call kernel_early
-  call _init
-  call kernel_main
-
-  cli
-
-hang:
-  hlt
-  jmp hang
-
-section .bss
-align 4
-stack:
-  resb STACKSIZE
-stack_ptr:
+    # Hang if kernel_main unexpectedly returns.
+    cli
+.Lhang:
+    hlt
+    jmp .Lhang
+.size _start, . - _start

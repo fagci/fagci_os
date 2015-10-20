@@ -2,14 +2,14 @@
 .PHONY: clean run
 
 CC=g++
-AS=nasm
+AS=as
 QEMU=qemu-system-i386
 
 MKDIR_P=mkdir -p
 
-ASFLAGS=-f elf32
+ASFLAGS=--32 #-f elf32
 CFLAGS=-m32 -O2 -Wall -Wextra -ffreestanding -fbuiltin -fno-exceptions -fno-rtti -c
-LDFLAGS=-m32 -Wall -Wextra -nostdlib -lgcc -T src/linker.ld
+LDFLAGS=-m32 -nostdlib -nodefaultlibs -lgcc -T src/linker.ld
 
 SRC_DIR=src
 OUT_DIR=out
@@ -50,7 +50,7 @@ $(KLIB_FILE_PATH):
 
 $(BOOT_FILE_PATH): $(OUT_DIR)/boot.o $(OUT_DIR)/kernel.o $(KLIB_FILE_PATH)
 	echo Make boot kernel...
-	$(CC) $(LDFLAGS) -o $@ $^
+	gcc $^ $(LDFLAGS) -o $@ 
 
 $(IMG_FILE): $(BOOT_FILE_PATH)
 	echo Make image...
