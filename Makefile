@@ -52,5 +52,8 @@ $(IMG_FILE): $(BOOT_FILE_PATH)
 run: $(IMG_FILE)
 	$(QEMU) -hda $<
 
+run-term: $(IMG_FILE)
+	$(QEMU) -hda $< -curses
+
 clean:
 	rm -rf $(IMG_DIR)/ $(OUT_DIR)/ $(IMG_FILE)
