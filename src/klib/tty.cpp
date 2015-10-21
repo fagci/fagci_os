@@ -3,15 +3,24 @@
 #include "string.h"
 #include "memory.h"
 
-#include "serial.h"
+#include "ports.h"
 
 uint16_t* tty_buffer;
 size_t tty_x, tty_y;
 enum vga_color fg_color = COLOR_WHITE, bg_color = COLOR_BLACK;
 
+void update_cursor(int row, int col) {
+    unsigned short position=(row*80) + col;
+    // cursor LOW port to vga INDEX register
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (unsigned char)(position&0xFF));
+    // cursor HIGH port to vga INDEX register
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (unsigned char )((position>>8)&0xFF));
+}
+
 void tty_init(void)
 {
-    write_serial(COM1,'2');
     tty_x = 0;
     tty_y = 0;
     tty_buffer = VGA_MEMORY;
@@ -43,7 +52,7 @@ void tty_putc(char c) {
         return;
     }
     tty_putentryat(tty_x, tty_y, fg_color, bg_color, c);
-    //update_cursor(caret_x, caret_y);
+    update_cursor(tty_x, tty_y);
     if (++tty_x == VGA_WIDTH) {
         tty_x = 0;
         if (++tty_y == VGA_HEIGHT) {
