@@ -11,7 +11,11 @@
 #define TTY_H_
 
 void tty_init(void);
-void tty_putentryat(size_t x, size_t y, enum vga_color fg, enum vga_color bg, char c);
+
+void tty_setbg(enum vga_color c);
+void tty_setfg(enum vga_color c);
+
+void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg, enum vga_color bg, char c);
 void tty_scroll();
 void tty_putc(char c);
 void tty_write(const char* s, size_t size);

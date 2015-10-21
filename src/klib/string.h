@@ -11,6 +11,6 @@
 #define STRING_H_
 
 size_t strlen(const char* string);
-
+void itoa(char *buf, int base, int d);
 
 #endif /* STRING_H_ */
