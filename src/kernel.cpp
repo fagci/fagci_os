@@ -20,15 +20,11 @@ void printf(const char *s) {
 	tty_puts(s);
 }
 
-#define PORT COM1
-
 extern "C" {
     void kernel_early(void) {
-        //init_serial(PORT);
-        //write_serial(PORT, '1');
+        init_serial(COM1);
+        //write_serial(COM1, '1');
         //tty_init();
-    }
-    void _init() {
     }
     void kernel_main(void) {
 

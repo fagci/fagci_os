@@ -2,7 +2,7 @@
 #include "ports.h"
 #include "string.h"
 
-void init_serial(uint16_t port) {
+void init_serial(size_t port) {
    outb(port + 1, 0x00);    // Disable all interrupts
    outb(port + 3, 0x80);    // Enable DLAB (set baud rate divisor)
    outb(port + 0, 0x03);    // Set divisor to 3 (lo byte) 38400 baud
