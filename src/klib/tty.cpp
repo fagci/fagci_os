@@ -18,6 +18,11 @@ void tty_setfg(enum vga_color c) {
     fg_color = c;
 }
 
+void tty_moveto(uint16_t x, uint16_t y) {
+    tty_x = x;
+    tty_y = y;
+}
+
 void update_cursor(void) {
     unsigned short position = (tty_y * VGA_WIDTH) + tty_x;
     // cursor LOW port to vga INDEX register
@@ -40,15 +45,16 @@ void tty_init(void) {
     }
 }
 
-void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg, enum vga_color bg,
-        char c) {
+void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg,
+        enum vga_color bg, char c) {
     tty_buffer[y * VGA_WIDTH + x] = (bg << 12) | (fg << 8) | c;
 }
 
 void tty_scroll() {
     uint16_t last_y = VGA_HEIGHT - 1;
     size_t maxlen = VGA_HEIGHT * VGA_WIDTH;
-    for (uint16_t i = VGA_WIDTH; i < maxlen; i++) tty_buffer[i-VGA_WIDTH] = tty_buffer[i];
+    for (uint16_t i = VGA_WIDTH; i < maxlen; i++)
+        tty_buffer[i - VGA_WIDTH] = tty_buffer[i];
     for (uint16_t x = 0; x < VGA_WIDTH; x++)
         tty_putentryat(x, last_y, fg_color, bg_color, ' ');
     tty_y = last_y;

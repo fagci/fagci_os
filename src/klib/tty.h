@@ -21,7 +21,7 @@ void tty_putc(char c);
 void tty_write(const char* s, size_t size);
 void tty_puts(const char *s);
 void tty_clear(enum vga_color bg);
-
+void tty_moveto(uint16_t x, uint16_t y);
 
 
 #endif /* TTY_H_ */

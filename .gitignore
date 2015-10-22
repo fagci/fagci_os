@@ -1,5 +1,7 @@
+/fos.iml
 src/klib/*.o
 src/klib/*.a
 out/
 iso/
 fos.img
+/.idea

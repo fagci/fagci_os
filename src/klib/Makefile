@@ -4,7 +4,6 @@ AR=ar
 
 ASFLAGS=-f elf32
 CFLAGS=-m32 -O2 -g -Wall -Wextra -ffreestanding -fno-exceptions -fno-rtti -c
-LDFLAGS=-m32 -nostdlib
 
 C_IN=$(wildcard *.cpp)
 C_OUT=$(C_IN:.cpp=.o)
@@ -25,7 +24,6 @@ all: libk.a
 libk.a: $(A_OUT) $(C_OUT)
 	@echo Building libk...
 	$(AR) rcs $@ $^
-	#gcc $(LDFLAGS) -o $@ $^
 
 clean:
 	@rm -f *.o libk.a
