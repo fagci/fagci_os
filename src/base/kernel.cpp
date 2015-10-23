@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "tty.h"
 #include "vga.h"
+#include "hal.h"
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -21,6 +22,8 @@ extern "C" {
         printf("---------\n");
         printf("FOS v0.01\n");
         printf("---------\n");
+        printf("%i\t%d\t%s\t-\n", 42, 42, "test");
+        printf("-\t--\t---\t----\n");
         tty_setbg(COLOR_RED);
         tty_setfg(COLOR_WHITE);
         printf("Testing functionality...");
@@ -31,8 +34,6 @@ extern "C" {
             tty_putc(spin_chars[i%4]);
         }
 
-        for(;;) {
-            asm("hlt");
-        }
+        idle();
     }
 }

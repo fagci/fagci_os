@@ -3,7 +3,7 @@
 #include "string.h"
 #include "memory.h"
 
-#include "ports.h"
+#include "hal.h"
 #include "stdio.h"
 
 uint16_t* tty_buffer;
@@ -32,11 +32,11 @@ CaretEntry* tty_getentry() {
 void update_cursor(void) {
     unsigned short position = (tty_y * VGA_WIDTH) + tty_x;
     // cursor LOW port to vga INDEX register
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (unsigned char) (position & 0xFF));
+    outportb(0x3D4, 0x0F);
+    outportb(0x3D5, (unsigned char) (position & 0xFF));
     // cursor HIGH port to vga INDEX register
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (unsigned char) ((position >> 8) & 0xFF));
+    outportb(0x3D4, 0x0E);
+    outportb(0x3D5, (unsigned char) ((position >> 8) & 0xFF));
 }
 
 void tty_init(void) {
@@ -67,20 +67,27 @@ void tty_scroll() {
 
 void tty_putc(char c) {
     switch (c) {
+        case '\t':
+            tty_x = (tty_x + 8) & ~(8 - 1);
+            break;
         case '\n':
             tty_x = 0;
-            if (++tty_y == VGA_HEIGHT) tty_scroll();
+            tty_y++;
+            break;
+        case '\r':
+            tty_x = 0;
             break;
         default:
             tty_putentryat(tty_x, tty_y, fg_color, bg_color, c);
-            if (++tty_x == VGA_WIDTH) {
-                tty_x = 0;
-                if (++tty_y == VGA_HEIGHT) {
-                    tty_scroll();
-                }
-            }
+            tty_x++;
             break;
     }
+
+    if (tty_x == VGA_WIDTH) {
+        tty_x = 0;
+        if (tty_y == VGA_HEIGHT) tty_scroll();
+    }
+
 
     update_cursor();
 }

@@ -1,4 +1,5 @@
 /fos.iml
+/fos.elf
 src/x86/*.o
 src/x86/*.a
 out/

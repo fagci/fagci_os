@@ -15,7 +15,7 @@ MKDIR_P=mkdir -p
 ASFLAGS=--32
 NASMFLAGS=-f elf32
 #CFLAGS=-m32 -O2 -g -Wall -Wextra -ffreestanding -fno-exceptions -fno-rtti -Isrc/include -c
-CFLAGS=-m32 -Wall -O4 -fno-omit-frame-pointer -Wextra -ffreestanding -Isrc/include
+CFLAGS=-m32 -Wall -O4 -D$(ARCH) -fno-omit-frame-pointer -Wextra -ffreestanding -Isrc/include
 LDFLAGS=-m32 -nostdlib -nodefaultlibs
 
 SRC_DIR=src
