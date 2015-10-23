@@ -10,6 +10,8 @@ uint16_t* tty_buffer;
 uint16_t tty_x, tty_y;
 enum vga_color fg_color = COLOR_WHITE, bg_color = COLOR_BLACK;
 
+
+
 void tty_setbg(enum vga_color c) {
     bg_color = c;
 }
@@ -21,6 +23,10 @@ void tty_setfg(enum vga_color c) {
 void tty_moveto(uint16_t x, uint16_t y) {
     tty_x = x;
     tty_y = y;
+}
+
+CaretEntry* tty_getentry() {
+    return new CaretEntry(tty_x, tty_y);
 }
 
 void update_cursor(void) {
@@ -45,8 +51,7 @@ void tty_init(void) {
     }
 }
 
-void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg,
-        enum vga_color bg, char c) {
+void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg, enum vga_color bg, char c) {
     tty_buffer[y * VGA_WIDTH + x] = (bg << 12) | (fg << 8) | c;
 }
 
@@ -91,6 +96,7 @@ void tty_puts(const char *s) {
 
 void tty_clear(enum vga_color bg) {
     size_t x, y;
+    bg_color = bg;
     tty_x = tty_y = 0;
     for (y = 0; y < VGA_HEIGHT; y++)
         for (x = 0; x < VGA_WIDTH; x++)
