@@ -3,15 +3,23 @@
 
 CC=g++
 AS=as
+AR=ar
 QEMU=qemu-system-i386
+
+ARCH ?= X86
+CPU ?= i686
+BINFMT ?= elf
 
 MKDIR_P=mkdir -p
 
-ASFLAGS=--32 #-f elf32
-CFLAGS=-m32 -O2 -g -Wall -Wextra -ffreestanding -fno-exceptions -fno-rtti -c
-LDFLAGS=-m32 -nostdlib -nodefaultlibs -T src/linker.ld
+ASFLAGS=--32
+NASMFLAGS=-f elf32
+#CFLAGS=-m32 -O2 -g -Wall -Wextra -ffreestanding -fno-exceptions -fno-rtti -Isrc/include -c
+CFLAGS=-m32 -Wall -O4 -fno-omit-frame-pointer -Wextra -ffreestanding -Isrc/include
+LDFLAGS=-m32 -nostdlib -nodefaultlibs
 
 SRC_DIR=src
+X86_DIR=src/arch/x86
 OUT_DIR=out
 IMG_DIR=iso
 
@@ -22,16 +30,23 @@ GRUB_DIR=$(BOOT_DIR)/grub
 BOOT_FILE_PATH=$(OUT_DIR)/$(BOOT_FILE)
 GRUB_CFG_PATH=$(GRUB_DIR)/$(GRUB_CFG)
 
-KLIB_DIR=src/klib
-KLIB_FILE=libk.a
-KLIB_FILE_PATH=$(KLIB_DIR)/$(KLIB_FILE)
+
+X86_FILE=x86.a
+X86_FILE_PATH=$(X86_DIR)/$(X86_FILE)
+
+C_IN=$(wildcard $(SRC_DIR)/base/kernel.cpp $(X86_DIR)/*.cpp)
+C_OUT=$(C_IN:.cpp=.o)
+
+A_IN=$(wildcard $(SRC_DIR)/base/boot.S $(X86_DIR)/*.S)
+A_OUT=$(A_IN:.S=.o)
+
 
 CRTI_OBJ:=$(OUT_DIR)/crti.o
 CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=crtbegin.o)
 CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=crtend.o)
 CRTN_OBJ:=$(OUT_DIR)/crtn.o
 
-OBJS=$(OUT_DIR)/boot.o $(OUT_DIR)/kernel.o $(KLIB_FILE_PATH)
+OBJS=$(A_OUT) $(C_OUT)
 
 OBJ_LINK_LIST:=\
 $(CRTI_OBJ) \
@@ -46,30 +61,25 @@ all: directories $(IMG_FILE)
 
 directories: $(OUT_DIR)
 
+.S.o:
+	$(AS) $(ASFLAGS) -o $@ $<
+
+.cpp.o:
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(BOOT_FILE): $(OBJ_LINK_LIST)
+	@echo Make boot kernel...
+	$(CC) $(LDFLAGS) -T src/linker.ld -o $@ $^
+
 $(OUT_DIR):
-	@echo Create directory
 	$(MKDIR_P) $(OUT_DIR)
 
-$(OUT_DIR)/boot.o: $(SRC_DIR)/boot.S
-	@echo Make boot.o...
-	$(AS) $(ASFLAGS) $< -o $@
+#$(X86_FILE_PATH): $(A_OUT) $(C_OUT)
+#	$(AR) rcs $@ $^
+#
 
-$(OUT_DIR)/kernel.o: $(SRC_DIR)/kernel.cpp
-	@echo Make kernel.o...
-	$(CC) $(CFLAGS) $< -o $@
 
-$(OUT_DIR)/%.o: $(SRC_DIR)/%.S
-	$(CC) -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
-
-$(KLIB_FILE_PATH):
-	@echo Make klib...
-	@cd $(KLIB_DIR) && $(MAKE) $(KLIB_FILE)
-
-$(BOOT_FILE_PATH): $(OBJ_LINK_LIST)
-	@echo Make boot kernel...
-	gcc $^ $(LDFLAGS) -o $@ 
-
-$(IMG_FILE): $(BOOT_FILE_PATH)
+$(IMG_FILE): $(BOOT_FILE)
 	@echo Make image...
 	$(MKDIR_P) $(GRUB_DIR)
 	@echo 'menuentry "myos" {' > $(GRUB_CFG_PATH)
@@ -85,5 +95,5 @@ run-term: all
 	$(QEMU) -hda $(IMG_FILE) -curses
 
 clean:
-	rm -rf $(IMG_DIR)/ $(OUT_DIR)/ $(IMG_FILE)
-	cd $(KLIB_DIR) && $(MAKE) clean
+	rm -rf $(IMG_DIR)/ $(IMG_FILE) $(OBJS)
+
