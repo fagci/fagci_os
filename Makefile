@@ -7,15 +7,13 @@ AR=ar
 QEMU=qemu-system-i386
 
 ARCH ?= X86
-CPU ?= i686
-BINFMT ?= elf
 
 MKDIR_P=mkdir -p
 
 ASFLAGS=--32
 NASMFLAGS=-f elf32
-#CFLAGS=-m32 -O2 -g -Wall -Wextra -ffreestanding -fno-exceptions -fno-rtti -Isrc/include -c
-CFLAGS=-m32 -Wall -O4 -D$(ARCH) -fno-omit-frame-pointer -Wextra -ffreestanding -Isrc/include
+#CFLAGS=-m32 -Wall -O4 -D$(ARCH) -fno-omit-frame-pointer -Wextra -fno-builtin -ffreestanding -Isrc/include -g3
+CFLAGS=-m32 -Wall -Wextra -pedantic -ffreestanding -fno-builtin -fno-exceptions -fno-rtti -Isrc/include
 LDFLAGS=-m32 -nostdlib -nodefaultlibs
 
 SRC_DIR=src
@@ -34,11 +32,11 @@ GRUB_CFG_PATH=$(GRUB_DIR)/$(GRUB_CFG)
 X86_FILE=x86.a
 X86_FILE_PATH=$(X86_DIR)/$(X86_FILE)
 
-C_IN=$(wildcard $(SRC_DIR)/base/kernel.cpp $(X86_DIR)/*.cpp)
+C_IN=$(wildcard $(SRC_DIR)/base/kernel.cpp $(X86_DIR)/*.cpp $(X86_DIR)/*/*.cpp)
 C_OUT=$(C_IN:.cpp=.o)
 
-A_IN=$(wildcard $(SRC_DIR)/base/boot.S $(X86_DIR)/*.S)
-A_OUT=$(A_IN:.S=.o)
+A_IN=$(wildcard $(SRC_DIR)/base/boot.S $(X86_DIR)/*/*.S)
+A_OUT=$(A_IN:.S=.asm.o)
 
 
 CRTI_OBJ:=$(OUT_DIR)/crti.o
@@ -61,7 +59,7 @@ all: directories $(IMG_FILE)
 
 directories: $(OUT_DIR)
 
-.S.o:
+%.asm.o: %.S
 	$(AS) $(ASFLAGS) -o $@ $<
 
 .cpp.o:
@@ -73,11 +71,6 @@ $(BOOT_FILE): $(OBJ_LINK_LIST)
 
 $(OUT_DIR):
 	$(MKDIR_P) $(OUT_DIR)
-
-#$(X86_FILE_PATH): $(A_OUT) $(C_OUT)
-#	$(AR) rcs $@ $^
-#
-
 
 $(IMG_FILE): $(BOOT_FILE)
 	@echo Make image...

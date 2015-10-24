@@ -5,6 +5,7 @@
  *      Author: fagci
  */
 
+#include <stdint.h>
 #include <stddef.h>
 
 #ifndef MEMORY_H_

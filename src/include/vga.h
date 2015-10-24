@@ -28,7 +28,7 @@ enum vga_color
     COLOR_LIGHT_RED = 12,
     COLOR_LIGHT_MAGENTA = 13,
     COLOR_LIGHT_BROWN = 14,
-    COLOR_WHITE = 15,
+    COLOR_WHITE = 15
 };
 
 static const uint16_t VGA_WIDTH = 80;

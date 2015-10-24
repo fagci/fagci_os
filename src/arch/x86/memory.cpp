@@ -1,4 +1,3 @@
-#include "stdint.h"
 #include "memory.h"
 
 void* memmove(void* dstptr, const void* srcptr, uint16_t size) {

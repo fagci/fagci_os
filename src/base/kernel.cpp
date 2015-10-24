@@ -2,6 +2,7 @@
 #include "tty.h"
 #include "vga.h"
 #include "hal.h"
+#include "ps2.h"
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -14,6 +15,7 @@ static inline uint64_t rdtsc() {
 extern "C" {
     void kernel_early(void) {
         tty_init();
+        init_ps2();
     }
     void kernel_main(void) {
         tty_clear(COLOR_LIGHT_CYAN);
