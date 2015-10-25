@@ -147,6 +147,7 @@ static int string_to_string(va_list *ap) {
  * @return      Number of characters printed
  */
 static int percent_to_string(va_list *ap) {
+    //(void)ap;
     tty_putc('%');
     return 1;
 }

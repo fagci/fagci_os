@@ -6,13 +6,9 @@ AS=as
 AR=ar
 QEMU=qemu-system-i386
 
-ARCH ?= X86
-
 MKDIR_P=mkdir -p
 
 ASFLAGS=--32
-NASMFLAGS=-f elf32
-#CFLAGS=-m32 -Wall -O4 -D$(ARCH) -fno-omit-frame-pointer -Wextra -fno-builtin -ffreestanding -Isrc/include -g3
 CFLAGS=-m32 -Wall -Wextra -pedantic -ffreestanding -fno-builtin -fno-exceptions -fno-rtti -Isrc/include
 LDFLAGS=-m32 -nostdlib -nodefaultlibs
 

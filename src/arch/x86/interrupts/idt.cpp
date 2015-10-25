@@ -31,9 +31,7 @@ extern "C" void flush_idt(uintptr_t idt);
 IDT_entry idt_entries[NUM_IDT_ENTRIES];
 IDT_ptr   idt;
 
-static void set_idt_entry(uint8_t i, uint32_t base, uint16_t selector,
-		uint8_t flags)
-{
+static void set_idt_entry(uint8_t i, uint32_t base, uint16_t selector, uint8_t flags) {
 	idt_entries[i].base_low  = base & 0xFFFF;
 	idt_entries[i].base_high = base >> 16;
 
@@ -47,8 +45,7 @@ static void set_idt_entry(uint8_t i, uint32_t base, uint16_t selector,
 #define SET_IDT(n) set_idt_entry(n, (uintptr_t)isr##n, 0x08, 0x8E)
 
 // Remap the IRQ table
-void remap_irq()
-{
+void remap_irq() {
 	outb(0x20, 0x11); // Start the init sequence for PIC 1...
 	outb(0xA0, 0x11); // ...and PIC 2
 	outb(0x21, 0x20); // Offset PIC 1 by 32, as the CPU uses the first 32 ISRs
@@ -61,8 +58,7 @@ void remap_irq()
 	outb(0xA1, 0x0);
 }
 
-void init_idt()
-{
+void init_idt() {
 	remap_irq();
 
 	idt.limit = (sizeof(IDT_entry) * NUM_IDT_ENTRIES) - 1;

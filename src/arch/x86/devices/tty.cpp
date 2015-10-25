@@ -92,8 +92,9 @@ void tty_putc(char c) {
 
     if (tty_x == VGA_WIDTH) {
         tty_x = 0;
-        if (tty_y == VGA_HEIGHT) tty_scroll();
+        tty_y++;
     }
+    if (tty_y == VGA_HEIGHT) tty_scroll();
 
 
     update_cursor();

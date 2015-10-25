@@ -54,6 +54,9 @@ char capitalize(char c)
 
 static void ps2_handler(Registers regs)
 {
+
+	//(void)regs;
+
 	uint8_t s = inb(PS2_DATA); // Read entered scancode
 
 	switch (s) {

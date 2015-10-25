@@ -3,4 +3,4 @@
 
 void init_ps2();
 
-#endif();
+#endif
