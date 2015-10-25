@@ -15,10 +15,14 @@ static inline uint64_t rdtsc() {
 extern "C" {
     void kernel_early(void) {
         tty_init();
+        initGDT();
+        printf("GDT initialized\n");
+        initIDT();
+        printf("IDT initialized\n");
+        enableInterrupts();
         init_ps2();
     }
     void kernel_main(void) {
-        tty_clear(COLOR_LIGHT_CYAN);
         tty_setfg(COLOR_GREEN);
         tty_moveto(0, 3);
         printf("---------\n");
@@ -26,16 +30,6 @@ extern "C" {
         printf("---------\n");
         printf("%i\t%d\t%s\t-\n", 42, 42, "test");
         printf("-\t--\t---\t----\n");
-        tty_setbg(COLOR_RED);
-        tty_setfg(COLOR_WHITE);
-        printf("Testing functionality...");
-        CaretEntry* ce = tty_getentry();
-        static char const spin_chars[] = "/-\\|";
-        for(size_t i = 0; i<2000000; i++){
-            tty_moveto(ce->x, ce->y);
-            tty_putc(spin_chars[i%4]);
-        }
-
         idle();
     }
 }

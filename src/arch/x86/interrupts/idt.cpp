@@ -58,13 +58,13 @@ static void		idtSetGate(unsigned char	index,
   idt[index] = 0;
 
   /* Configure the gate's offset. */
-  idt[index] |= ((offset & 0xffff) | (((unsigned long long int) offset & 0xffff0000) << 32));
+  idt[index] |= ((offset & 0xffff) | (((size_t) offset & 0xffff0000) << 32));
 
   /* Configure the gate's selector. */
-  idt[index] |= ((unsigned long long int) selector << 16);
+  idt[index] |= ((size_t) selector << 16);
 
   /* Configure the attributes for this gate descriptor. */
-  idt[index] |= ((unsigned long long int) attribs << 32);
+  idt[index] |= ((size_t) attribs << 32);
 }
 
 void remapIrq()
@@ -101,6 +101,7 @@ void initIDT()
 		SET_IDT(45); SET_IDT(46); SET_IDT(47);
 
     asm volatile("lidt (%0)" :: "m" (idtp));
+
 }
 
 void enableInterrupts(){asm ("sti");}
