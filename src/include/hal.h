@@ -2,23 +2,18 @@
 #define __HAL_H
 
 #include <stdint.h>
+#include "idt.h"
+#include "panic.h"
 
 void enable_interrupts();
 void disable_interrupts();
 int get_interrupt_state();
 void idle();
 void die();
-unsigned char inportb(unsigned short _port);
-void outportb(unsigned short _port, unsigned char _data);
+unsigned char inb(unsigned short _port);
+void outb(unsigned short _port, unsigned char _data);
 
-
-// ------------------------
-
-#define STACKSIZE 0x200000
-#define MEMSIZE getTotalMemory()
-
-#define interruptNum 256
-
+// IRQ numbers
 #define IRQ0 32
 #define IRQ1 33
 #define IRQ2 34
@@ -36,43 +31,17 @@ void outportb(unsigned short _port, unsigned char _data);
 #define IRQ14 46
 #define IRQ15 47
 
-#define COM1 0x3f8
-#define COM2 0x2f8
-#define COM3 0x3e8
-#define COM4 0x2e8
-
-#define ASSERT(x) (x ? (void)0 : crash("\"%s\" returned false in file \"%s\" in function \"%s\" at line %i", #x, __FILE__, __func__, __LINE__))
-
-extern int kend;
-#define kern_end  (void *)&kend
-
-void gdtSetGate(
-		int num,
-		unsigned long base,
-		unsigned long limit,
-		unsigned char access,
-		unsigned char gran
-);
-
+// Represents the registers we push onto the stack
+// in isr_common and irq_common (isrs.s)
 typedef struct Registers
 {
-	unsigned int ds, edi, esi, ebp, esp, ebx, edx, ecx, eax,
-	int_no, err, eip, cs, eflags, useresp, ss;
-} __attribute__((packed)) Registers;
+	uint32_t ds, edi, esi, ebp, esp, ebx, edx, ecx, eax,
+		int_no, err, eip, cs, eflags, useresp, ss;
+} Registers;
 
+// Interrupt handler function type
 typedef void (*Handler)(Registers);
-
-uint64_t getTotalMemory();
-
-void crash(char * message, ...);
-
-void initGDT();
-void gdtFlush();
-
-void initIDT();
-void enableInterrupts();
-void disableInterrupts();
-void registerInterruptHandler(unsigned char, Handler);
+void register_interrupt_handler(uint8_t i, Handler handler);
 
 
 #endif

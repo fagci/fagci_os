@@ -54,7 +54,7 @@ char capitalize(char c)
 
 static void ps2_handler(Registers regs)
 {
-	uint8_t s = inportb(PS2_DATA); // Read entered scancode
+	uint8_t s = inb(PS2_DATA); // Read entered scancode
 
 	switch (s) {
 	case LSHIFT_DOWN:
@@ -84,5 +84,5 @@ static void ps2_handler(Registers regs)
 
 void init_ps2()
 {
-	registerInterruptHandler(IRQ1, ps2_handler);
+	register_interrupt_handler(IRQ1, ps2_handler);
 }

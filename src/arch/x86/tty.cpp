@@ -3,7 +3,7 @@
 #include "string.h"
 #include "memory.h"
 
-#include "hal.h"
+#include "dev.h"
 #include "stdio.h"
 
 uint16_t* tty_buffer;
@@ -32,11 +32,11 @@ CaretEntry* tty_getentry() {
 void update_cursor(void) {
     unsigned short position = (tty_y * VGA_WIDTH) + tty_x;
     // cursor LOW port to vga INDEX register
-    outportb(0x3D4, 0x0F);
-    outportb(0x3D5, (unsigned char) (position & 0xFF));
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (unsigned char) (position & 0xFF));
     // cursor HIGH port to vga INDEX register
-    outportb(0x3D4, 0x0E);
-    outportb(0x3D5, (unsigned char) ((position >> 8) & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (unsigned char) ((position >> 8) & 0xFF));
 }
 
 void tty_init(void) {

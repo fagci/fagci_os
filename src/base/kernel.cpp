@@ -2,6 +2,8 @@
 #include "tty.h"
 #include "vga.h"
 #include "hal.h"
+#include "gdt.h"
+#include "idt.h"
 #include "ps2.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -15,12 +17,10 @@ static inline uint64_t rdtsc() {
 extern "C" {
     void kernel_early(void) {
         tty_init();
-        initGDT();
-        printf("GDT initialized\n");
-        initIDT();
-        printf("IDT initialized\n");
-        enableInterrupts();
-        init_ps2();
+        init_gdt(), printf("GDT initialized\n");
+        init_idt(), printf("IDT initialized\n");
+        enable_interrupts();
+        //init_ps2();
     }
     void kernel_main(void) {
         tty_setfg(COLOR_GREEN);

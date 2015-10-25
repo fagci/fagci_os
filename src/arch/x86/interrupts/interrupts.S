@@ -1,7 +1,7 @@
 # Interrupt Service Routines
 
 # Common function called by all ISRs
-isrCommon:
+isr_common:
 	# Push all the registers we want to back up
 	pusha			# Push edi, esi, ebp, esp, ebx, edx, ecx, eax
 	mov	%ds, %ax
@@ -10,11 +10,11 @@ isrCommon:
 	# Load kernel mode segments
 	mov	$0x10, %ax
 	mov	%ax, %ds
-	mov	%ax, %esf
+	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs
 
-	call	isrHandler	# Call our C ISR handler
+	call	isr_handler	# Call our C ISR handler
 
 	# Restore all the registers we backed up
 	popl	%eax
@@ -29,7 +29,7 @@ isrCommon:
 	iret
 
 # Common function called by all IRQs
-irqCommon:
+irq_common:
 	# Push all the registers we want to back up
 	pusha			# Push edi, esi, ebp, esp, ebx, edx, ecx, eax
 	mov	%ds, %ax
@@ -42,7 +42,7 @@ irqCommon:
 	mov	%ax, %fs
 	mov	%ax, %gs
 
-	call	irqHandler	# Call our C IRQ handler
+	call	irq_handler	# Call our C IRQ handler
 
 	# Restore all the registers we backed up
 	popl	%eax
@@ -60,29 +60,29 @@ irqCommon:
 .macro ISR_NO_ERR num
 	.global isr\num
 	isr\num:
-		#cli
+		cli
 		push 	$0
 		push 	$\num
-		jmp 	isrCommon
+		jmp 	isr_common
 .endm
 
 # Macro for ISRs that push an error code
 .macro ISR_ERR num
 	.global isr\num
 	isr\num:
-		#cli
+		cli
 		push 	$\num
-		jmp 	isrCommon
+		jmp 	isr_common
 .endm
 
 # Macro for IRQs; different stub
 .macro IRQ num
 	.global isr\num
 	isr\num:
-		#cli
+		cli
 		push	$0
 		push 	$\num
-		jmp 	irqCommon
+		jmp 	irq_common
 .endm
 
 # Create all the ISRs
