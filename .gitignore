@@ -6,3 +6,6 @@ out/
 iso/
 fos.img
 /.idea
+.project
+.settings
+nbproject/

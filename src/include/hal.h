@@ -7,7 +7,7 @@
 
 void enable_interrupts();
 void disable_interrupts();
-int get_interrupt_state();
+//int get_interrupt_state();
 void idle();
 void die();
 unsigned char inb(unsigned short _port);

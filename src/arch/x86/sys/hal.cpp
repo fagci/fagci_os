@@ -9,11 +9,11 @@ void disable_interrupts() {
   __asm__ volatile("cli");
 }
 
-int get_interrupt_state() {
-  uint32_t eflags;
-  __asm__ volatile("pushf; pop %0" : "=r" (eflags));
-  return eflags & 0x200;
-}
+//int get_interrupt_state() {
+//  uint32_t eflags;
+//  __asm__ volatile("pushf; pop %0" : "=r" (eflags));
+//  return eflags & 0x200;
+//}
 
 void idle() {
   for (;;) {
