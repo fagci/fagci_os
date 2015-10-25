@@ -20,6 +20,7 @@ struct CaretEntry {
 CaretEntry* tty_getentry();
 
 void tty_scroll();
+void update_cursor();
 void tty_clear(enum vga_color bg);
 void tty_moveto(uint16_t x, uint16_t y);
 void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg, enum vga_color bg, char c);

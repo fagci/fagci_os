@@ -21,16 +21,14 @@
 
 static bool shift_down = false;
 
-int pressedp(uint8_t scancode)
-{
+int pressedp(uint8_t scancode) {
 	return scancode <= 0x58;
 }
 
 static char const SCANCODE_SET1[] =
 	"\0\0001234567890-=\b\tqwertyuiop[]\0\0asdfghjkl;'`\0\\zxcvbnm,./\0\0\0 ";
 
-char get_char(uint8_t scancode)
-{
+char get_char(uint8_t scancode) {
 	if (scancode >= 0x81)
 		return SCANCODE_SET1[scancode - 0x80];
 	else
@@ -44,19 +42,14 @@ static char const UPPERCASE_SYMBOLS[] =
 	"\"\0\0\0\0<_>?)!@#$%^&*(\0:\0+\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0{|}\0\0~";
 static const char SYMBOL_START = '\'';
 
-char capitalize(char c)
-{
+char capitalize(char c) {
 	if (c >= 'a' && c <= 'z')
 		return c - CASE_DIFF;
 	else
 		return UPPERCASE_SYMBOLS[c - SYMBOL_START];
 }
 
-static void ps2_handler(Registers regs)
-{
-
-	//(void)regs;
-
+static void ps2_handler(Registers regs) {
 	uint8_t s = inb(PS2_DATA); // Read entered scancode
 
 	switch (s) {
@@ -85,7 +78,6 @@ static void ps2_handler(Registers regs)
 	}
 }
 
-void init_ps2()
-{
+void init_ps2() {
 	register_interrupt_handler(IRQ1, ps2_handler);
 }

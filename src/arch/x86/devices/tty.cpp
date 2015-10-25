@@ -32,10 +32,19 @@ CaretEntry* tty_getentry() {
 void update_cursor(void) {
     uint16_t pos = tty_y * VGA_WIDTH + tty_x;
 
-    outb(CRTC_PORT,     0xF);        // About to send the 8 LSB through...
+    outb(CRTC_PORT,     0x0F);        // About to send the 8 LSB through...
     outb(CRTC_PORT + 1, pos & 0xFF); // ...there you go!
-    outb(CRTC_PORT,     0xE);        // Now for the 8 MSB...
-    outb(CRTC_PORT + 1, pos >> 8);   // ..done
+    outb(CRTC_PORT,     0x0E);        // Now for the 8 MSB...
+    outb(CRTC_PORT + 1, (pos >> 8) & 0xFF);   // ..done
+}
+
+void tty_clear(enum vga_color bg) {
+    size_t x, y;
+    bg_color = bg;
+    tty_x = tty_y = 0;
+    for (y = 0; y < VGA_HEIGHT; y++)
+        for (x = 0; x < VGA_WIDTH; x++)
+            tty_putentryat(x, y, fg_color, bg, ' ');
 }
 
 void tty_init(void) {
@@ -48,6 +57,7 @@ void tty_init(void) {
             tty_buffer[index] = make_vgaentry(' ', bg_color);
         }
     }
+    tty_clear(bg_color);
 }
 
 void tty_putentryat(uint16_t x, uint16_t y, enum vga_color fg, enum vga_color bg, char c) {
@@ -95,8 +105,6 @@ void tty_putc(char c) {
         tty_y++;
     }
     if (tty_y == VGA_HEIGHT) tty_scroll();
-
-
     update_cursor();
 }
 
@@ -109,11 +117,3 @@ void tty_puts(const char *s) {
     tty_write(s, strlen(s));
 }
 
-void tty_clear(enum vga_color bg) {
-    size_t x, y;
-    bg_color = bg;
-    tty_x = tty_y = 0;
-    for (y = 0; y < VGA_HEIGHT; y++)
-        for (x = 0; x < VGA_WIDTH; x++)
-            tty_putentryat(x, y, fg_color, bg, ' ');
-}

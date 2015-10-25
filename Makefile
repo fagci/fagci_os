@@ -59,5 +59,8 @@ run: all
 run-term: all
 	$(QEMU) -hda $(IMG_FILE) -curses
 
+run-kernel:
+	$(QEMU) -kernel $(BOOT_FILE) -serial file:serial.log
+
 clean:
-	$(RM) -f $(IMG_DIR)/* $(IMG_FILE) $(OUT_OBJECTS)
+	$(RM) -rf $(IMG_DIR)/* $(IMG_FILE) $(OUT_OBJECTS)
