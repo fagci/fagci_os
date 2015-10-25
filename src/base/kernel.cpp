@@ -20,7 +20,7 @@ extern "C" {
         init_gdt(), printf("GDT initialized\n");
         init_idt(), printf("IDT initialized\n");
         enable_interrupts();
-        //init_ps2();
+        init_ps2();
     }
     void kernel_main(void) {
         tty_setfg(COLOR_GREEN);

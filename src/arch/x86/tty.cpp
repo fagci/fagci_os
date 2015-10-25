@@ -10,7 +10,7 @@ uint16_t* tty_buffer;
 uint16_t tty_x, tty_y;
 enum vga_color fg_color = COLOR_WHITE, bg_color = COLOR_BLACK;
 
-
+#define CRTC_PORT 0x3D4
 
 void tty_setbg(enum vga_color c) {
     bg_color = c;
@@ -30,13 +30,12 @@ CaretEntry* tty_getentry() {
 }
 
 void update_cursor(void) {
-    unsigned short position = (tty_y * VGA_WIDTH) + tty_x;
-    // cursor LOW port to vga INDEX register
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (unsigned char) (position & 0xFF));
-    // cursor HIGH port to vga INDEX register
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (unsigned char) ((position >> 8) & 0xFF));
+    uint16_t pos = tty_y * VGA_WIDTH + tty_x;
+
+    outb(CRTC_PORT,     0xF);        // About to send the 8 LSB through...
+    outb(CRTC_PORT + 1, pos & 0xFF); // ...there you go!
+    outb(CRTC_PORT,     0xE);        // Now for the 8 MSB...
+    outb(CRTC_PORT + 1, pos >> 8);   // ..done
 }
 
 void tty_init(void) {
@@ -76,6 +75,14 @@ void tty_putc(char c) {
             break;
         case '\r':
             tty_x = 0;
+            break;
+        case '\b':
+            if(tty_x == 0){
+                tty_y--;
+                tty_x = VGA_WIDTH - 1;
+            } else {
+                tty_x--;
+            }
             break;
         default:
             tty_putentryat(tty_x, tty_y, fg_color, bg_color, c);

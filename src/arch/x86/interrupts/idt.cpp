@@ -16,7 +16,7 @@ typedef struct IDT_ptr
 } __attribute__((packed)) IDT_ptr;
 
 // extern declarations for isr{0..31}
-#define EXISR(n) extern void isr##n()
+#define EXISR(n) extern "C" void isr##n()
 
 EXISR(0);  EXISR(1);  EXISR(2);  EXISR(3);  EXISR(4);  EXISR(5);  EXISR(6);
 EXISR(7);  EXISR(8);  EXISR(9);  EXISR(10); EXISR(11); EXISR(12); EXISR(13);
@@ -26,7 +26,7 @@ EXISR(28); EXISR(29); EXISR(30); EXISR(31); EXISR(32); EXISR(33); EXISR(34);
 EXISR(35); EXISR(36); EXISR(37); EXISR(38); EXISR(39); EXISR(40); EXISR(41);
 EXISR(42); EXISR(43); EXISR(44); EXISR(45); EXISR(46); EXISR(47);
 
-extern void flush_idt(uintptr_t idt);
+extern "C" void flush_idt(uintptr_t idt);
 
 IDT_entry idt_entries[NUM_IDT_ENTRIES];
 IDT_ptr   idt;
